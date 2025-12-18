@@ -1,0 +1,25 @@
+# ignore Python caches, venvs, node_modules, local data and large folders
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+venv/
+env/
+.env
+.git
+.gitignore
+node_modules
+dist
+build
+
+# big local folders that cause GB context transfer:
+AIT_chroma
+chroma_data
+data
+*.ckpt
+*.pth
+*.pt
+downloads
+**/__pycache__
+
