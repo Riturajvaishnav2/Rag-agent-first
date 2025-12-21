@@ -18,8 +18,8 @@ services:
     container_name: chroma
     # Note: no host port mapping by default to avoid conflicts.
     # If you want to access Chroma from the host, uncomment:
-    # ports:
-    #   - "8001:8000"
+    ports:
+      - "8001:8000"
     environment:
       - IS_PERSISTENT=TRUE
       - PERSIST_DIRECTORY=/chroma/chroma
