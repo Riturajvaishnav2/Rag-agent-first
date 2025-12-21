@@ -10,7 +10,7 @@ This project is a **production-grade AI Speech processing Agent** that reads lon
 AmbedkarGPT-Intern-Task/  
 ├── main.py              → Main RAG pipeline  
 ├── requirements.txt     → Python dependencies  
-├── files/AI-for-Education-RAG.pdf           → Input file for summarization  
+├── files/IOTRON INBOUND Traffic.csv           → Input file for summarization  
 ├── docker-compose.yml   → Multi-container setup (App + ChromaDB)  
 ├── Dockerfile           → Python app image  
 ├── .dockerignore  
@@ -20,7 +20,7 @@ AmbedkarGPT-Intern-Task/
 
 # 🧠 Key Features
 
-- Reads any `.txt` document or speech  
+- Reads `.txt`, `.csv`, or Excel (`.xlsx/.xls`) files  
 - Splits text into overlapping semantic chunks  
 - Embeds chunks using Sentence-Transformers  
 - Stores embeddings in **ChromaDB**  
@@ -65,9 +65,9 @@ If you're using Docker Compose, Ollama runs as a container and you **do not** ne
 
 # ✍️ Prepare Your Input File
 
-Edit or replace the file named `speech.txt` in the repo root.
+Point `SPEECH_FILE` (in `.env`) to the file you want to query.
 
-- Must be plain `.txt`  
+- Supports `.txt`, `.csv`, and `.xlsx/.xls`  
 - Can be long or short  
 - This is the file the agent will generate a response for the query
 
@@ -125,8 +125,8 @@ Optional debug mode (prints retrieved chunks before calling the LLM):
 
 # 🔍 Internal Workflow (what happens per query)
 
-1. Loads `speech.txt`  
-2. Splits into chunks (default chunk size: 1000, overlap: 100)  
+1. Loads the file from `SPEECH_FILE`  
+2. Splits text into chunks or converts CSV/Excel rows into docs  
 3. Generates embeddings with Sentence-Transformers  
 4. Persists embeddings to ChromaDB  
 5. Performs semantic search for the query  

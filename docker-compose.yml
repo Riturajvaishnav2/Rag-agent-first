@@ -13,6 +13,21 @@ services:
       - ollama_data:/root/.ollama
     restart: unless-stopped
 
+  chroma:
+    image: chromadb/chroma:0.4.24
+    container_name: chroma
+    # Note: no host port mapping by default to avoid conflicts.
+    # If you want to access Chroma from the host, uncomment:
+    # ports:
+    #   - "8001:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=FALSE
+    volumes:
+      - chroma_data:/chroma/chroma
+    restart: unless-stopped
+
   app:
     build:
       context: .
@@ -20,19 +35,22 @@ services:
     container_name: fsoc_ai_intern_app
     depends_on:
       - ollama
+      - chroma
     environment:
-      - SPEECH_FILE=${SPEECH_FILE:-files/AI-for-Education-RAG.pdf}
+      - SPEECH_FILE=${SPEECH_FILE:-files/IOTRON INBOUND Traffic.csv}
       - PERSIST_DIR=${PERSIST_DIR:-/data/chroma}
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-sentence-transformers/all-MiniLM-L6-v2}
       - CHUNK_SIZE=${CHUNK_SIZE:-1000}
       - CHUNK_OVERLAP=${CHUNK_OVERLAP:-100}
       - TOP_K=${TOP_K:-3}
       - OLLAMA_API_URL=${OLLAMA_API_URL:-http://ollama:11434}
+      - CHROMA_HOST=${CHROMA_HOST:-chroma}
+      - CHROMA_PORT=${CHROMA_PORT:-8000}
+      - CHROMA_COLLECTION=${CHROMA_COLLECTION:-langchain}
     ports:
       - "8000:8000"
     volumes:
       - ./:/app
-      - chroma_data:/data/chroma
     command: ["bash", "-c", "sleep infinity"]
     restart: "no"
 

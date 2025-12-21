@@ -16,16 +16,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
+
 RUN mkdir -p files
 COPY files/ ./files/
 
-RUN pip install --upgrade pip setuptools wheel &&\
-    pip install torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cpu &&\
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+# Ensure chroma dir exists (volume will mount here at runtime)
 RUN mkdir -p /data/chroma
 
 CMD ["python", "main.py"]
-
