@@ -13,5 +13,5 @@ hnswlib==0.8.0
 python-dotenv==1.2.1
 requests==2.32.5
 uvicorn==0.18.3
-fastapi==0.85.1
+fastapi==0.95.2
 huggingface-hub==0.25.2

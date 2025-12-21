@@ -1,5 +1,5 @@
-# Use a small, modern Python base
-FROM python:3.11-slim
+# Use a small, modern Python base (3.10 for torch==2.0.1 compatibility)
+FROM python:3.10-slim
 
 # Prevent Python from writing pyc files and buffer stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1
