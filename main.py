@@ -184,9 +184,10 @@ def build_or_load_chroma(docs: List[Document], embeddings) -> Chroma:
             client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
             db = Chroma(
                 collection_name=CHROMA_COLLECTION,
-                embedding_function=embeddings,
+                embedding_function=None,
                 client=client,
             )
+            db._embedding_function = embeddings
         except Exception as e:
             print(
                 f"[ERROR] Could not connect to Chroma server at {CHROMA_HOST}:{CHROMA_PORT}: {e}",
@@ -202,8 +203,9 @@ def build_or_load_chroma(docs: List[Document], embeddings) -> Chroma:
             db = Chroma(
                 collection_name=CHROMA_COLLECTION,
                 persist_directory=PERSIST_DIR,
-                embedding_function=embeddings,
+                embedding_function=None,
             )
+            db._embedding_function = embeddings
             existing_count = _get_collection_count(db)
             if existing_count and existing_count > 0:
                 print(f"[i] Loading existing Chroma DB from {PERSIST_DIR} (docs: {existing_count})")
@@ -225,15 +227,9 @@ def build_or_load_chroma(docs: List[Document], embeddings) -> Chroma:
     texts = [d.page_content for d in docs]
     metadatas = [d.metadata for d in docs]
     if db is None:
-        db = Chroma.from_texts(
-            texts,
-            embedding=embeddings,
-            metadatas=metadatas,
-            collection_name=CHROMA_COLLECTION,
-            persist_directory=PERSIST_DIR,
-        )
-    else:
-        db.add_texts(texts, metadatas=metadatas)
+        print("[ERROR] Chroma DB not initialized.", file=sys.stderr)
+        sys.exit(3)
+    db.add_texts(texts, metadatas=metadatas)
     if not use_http:
         print("[i] Persisting Chroma DB...")
         try:
