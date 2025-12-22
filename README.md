@@ -8,7 +8,9 @@ This project is a **production-grade AI Speech processing Agent** that reads lon
 # 🧱 Project Structure
 
 AmbedkarGPT-Intern-Task/  
-├── main.py              → Main RAG pipeline  
+├── ingest.py            → Step 1: ingest documents into Chroma  
+├── query.py             → Step 2: query with LLM + Chroma context  
+├── main.py              → Legacy single-step pipeline  
 ├── requirements.txt     → Python dependencies  
 ├── files/IOTRON INBOUND Traffic.csv           → Input file for summarization  
 ├── docker-compose.yml   → Multi-container setup (App + ChromaDB)  
@@ -99,13 +101,17 @@ This project reads configuration from environment variables. Defaults are provid
 
     sudo docker compose exec ollama ollama pull mistral
 
-### 3️⃣ Run a query
+### 3️⃣ Ingest the document (first run or when data changes)
 
-    sudo docker compose exec app python main.py -q "Summarize the speech"
+    sudo docker compose exec app python ingest.py
+
+### 4️⃣ Run a query
+
+    sudo docker compose exec app python query.py -q "Summarize the speech"
 
 Optional debug mode (prints retrieved chunks before calling the LLM):
 
-    sudo docker compose exec app python main.py --debug -q "Summarize the speech"
+    sudo docker compose exec app python query.py --debug -q "Summarize the speech"
 
 ## Option B: Run locally (no Docker)
 
@@ -119,7 +125,8 @@ Optional debug mode (prints retrieved chunks before calling the LLM):
 
 ### 3️⃣ Run the script
 
-    OLLAMA_API_URL=http://localhost:11434 PERSIST_DIR=./chroma python main.py -q "Summarize the speech"
+    OLLAMA_API_URL=http://localhost:11434 PERSIST_DIR=./chroma python ingest.py
+    OLLAMA_API_URL=http://localhost:11434 PERSIST_DIR=./chroma python query.py -q "Summarize the speech"
 
 ---
 
@@ -178,9 +185,10 @@ If you changed `speech.txt` and want to re-index from scratch, remove the `chrom
     sudo docker compose down -v
 
 ### App container doesn't print an answer
-The `app` service runs `sleep infinity` to stay alive. Run queries with:
+The `app` service runs `sleep infinity` to stay alive. Ingest then query with:
 
-    sudo docker compose exec app python main.py -q "your question"
+    sudo docker compose exec app python ingest.py
+    sudo docker compose exec app python query.py -q "your question"
 
 ---
 
